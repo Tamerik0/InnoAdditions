@@ -1,0 +1,47 @@
+# Example config for InnoAdditions boss effect.
+# Real config is generated/loaded from:
+#   config/innoadditions-boss-effect.toml
+
+[boss_effect]
+	# How many effect levels (amplifiers) are supported. 1 => only amplifier 0.
+	# Range: 1 ~ 64
+	levels = 3
+
+	# Optional defaults used as a template for all levels.
+	[boss_effect.defaults]
+		noPlayersRegenPerTick = 0.01
+		baseRegenPerSecond = 0.005
+		regenPerAttackerPerSecond = 0.0025
+		maxAttackersForScaling = 10
+		nearbyPlayerRadius = 32.0
+
+		auraRadius = 8.0
+		auraIntervalTicks = 40
+		auraDamageFraction = 0.01
+
+		hitsRequiredForTeleport = 5
+		maxTeleportsTracked = 3
+		teleportMinDist = 2.0
+		teleportMaxDist = 6.0
+
+		unreachableRegenMultiplier = 2.0
+		unreachableAuraMultiplier = 2.0
+
+		attackerWindowTicks = 1200
+
+	[boss_effect.levels]
+		[boss_effect.levels.level0]
+			# level0 overrides (amplifier 0)
+			# (If you omit any field here, it falls back to boss_effect.defaults.)
+			# Example changes:
+			baseRegenPerSecond = 0.005
+
+		[boss_effect.levels.level1]
+			# amplifier 1
+			auraRadius = 9.0
+			auraDamageFraction = 0.0125
+
+		[boss_effect.levels.level2]
+			# amplifier 2
+			auraRadius = 10.0
+			auraDamageFraction = 0.015

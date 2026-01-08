@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "innoadditions.refmap.json",
   "mixins": [
-    "BossEventsMixin"
+    "ApothBossMixin",
+    "BossEventsMixin",
+    "EntityMixin"
   ],
   "client": [
   ],

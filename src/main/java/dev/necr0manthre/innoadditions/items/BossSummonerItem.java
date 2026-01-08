@@ -43,7 +43,7 @@ public class BossSummonerItem extends Item {
         boss.setTarget(player);
         ((ServerLevel) world).addFreshEntityWithPassengers(boss);
         ctx.getItemInHand().shrink(1);
-        return InteractionResult.SUCCESS;
+        return InteractionResult.CONSUME;
     }
 
 }

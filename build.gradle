@@ -104,6 +104,7 @@ repositories {
             includeGroup "dev.shadowsoffire"
         }
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -112,6 +113,11 @@ dependencies {
     implementation fg.deobf("curse.maven:apotheosis-313970:6461960")
     implementation fg.deobf("dev.shadowsoffire:Placebo:${minecraft_version}-${placeboVersion}")
     implementation fg.deobf("dev.shadowsoffire:ApothicAttributes:${minecraft_version}-${attributeslibVersion}")
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-beta.5"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.5.0-beta.5")) {
+        jarJar.ranged(it, "[0.5.0-beta.5,)")
+    }
 }
 
 tasks.named('processResources', ProcessResources).configure {

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public class EntityMixin {
-    @Inject(method = "getBlockExplosionResistance", at = @At("RETURN"), cancellable = true, remap = false)
+    @Inject(method = "getBlockExplosionResistance", at = @At("RETURN"), cancellable = true)
     public void getBlockExplosionResistance(Explosion explosion, BlockGetter blockGetter, BlockPos pos, BlockState state, FluidState fluidState, float power, CallbackInfoReturnable<Float> cir) {
         var entity = (Entity) (Object) this;
         if (entity instanceof LivingEntity living && living.hasEffect(InnoMobEffects.BOSS.get()))

@@ -30,6 +30,6 @@ public class ModEnUsLanguageProvider extends LanguageProvider {
         add(InnoItems.EPIC_SUMMONER.get(), "Epic Boss Summoner");
         add(InnoItems.MYTHIC_SUMMONER.get(), "Mythic Boss Summoner");
 
-        add("innoadditions.lox", "You are too weak to hold this item");
+        add("innoadditions.lox", "You are too weak to use this item");
     }
 }

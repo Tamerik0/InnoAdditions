@@ -11,10 +11,13 @@ import dev.shadowsoffire.apotheosis.adventure.loot.RarityRegistry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.common.CuriosHelper;
 
 import java.util.Map;
 
@@ -35,20 +38,38 @@ public class InventoryEventsHandler {
             return;
         if (BossDefenseForgeConfig.INSTANCE.stepan.get().contains(player.getScoreboardName()))
             return;
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            var stack = player.getInventory().getItem(i);
-            var isMagicUnlocked = player.getCapability(PlayerMagicProvider.MAGIC).map(IPlayerMagic::isMagicUnlocked).orElse(false);
-            var tier = isMagicUnlocked ?
-                    player.getCapability(PlayerProgressionProvider.PROGRESSION).map(IPlayerProgression::getTier).orElse(0) + 1
-                    : 1;
-            if (tier == 6)
-                return;
-            var maxRarity = RarityRegistry.INSTANCE.getOrDefault(raritiesByTier.getOrDefault(tier, null), null);
+
+        var isMagicUnlocked = player.getCapability(PlayerMagicProvider.MAGIC).map(IPlayerMagic::isMagicUnlocked).orElse(false);
+        var tier = isMagicUnlocked ?
+                player.getCapability(PlayerProgressionProvider.PROGRESSION).map(IPlayerProgression::getTier).orElse(0) + 1
+                : 1;
+        if (tier == 6)
+            return;
+
+        var maxRarity = RarityRegistry.INSTANCE.getOrDefault(raritiesByTier.getOrDefault(tier, null), null);
+
+        // Check Armor and Hands
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack stack = player.getItemBySlot(slot);
             if (AffixHelper.getRarity(stack).getOptional().map(rarity -> maxRarity == null || !rarity.isAtMost(maxRarity)).orElse(false)) {
                 player.drop(stack.copy(), true);
-                player.getInventory().setItem(i, ItemStack.EMPTY);
+                player.setItemSlot(slot, ItemStack.EMPTY);
                 player.sendSystemMessage(Component.translatable("innoadditions.lox"));
             }
         }
+
+        // Check Curios
+        new CuriosHelper().getCuriosHandler(player).ifPresent(handler -> {
+            handler.getCurios().forEach((id, stacksHandler) -> {
+                 for (int i = 0; i < stacksHandler.getStacks().getSlots(); i++) {
+                     ItemStack stack = stacksHandler.getStacks().getStackInSlot(i);
+                     if (AffixHelper.getRarity(stack).getOptional().map(rarity -> maxRarity == null || !rarity.isAtMost(maxRarity)).orElse(false)) {
+                         player.drop(stack.copy(), true);
+                         stacksHandler.getStacks().setStackInSlot(i, ItemStack.EMPTY);
+                         player.sendSystemMessage(Component.translatable("innoadditions.lox"));
+                     }
+                 }
+            });
+        });
     }
 }

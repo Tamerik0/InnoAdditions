@@ -7,7 +7,9 @@ import com.mna.capabilities.playerdata.progression.PlayerProgressionProvider;
 import dev.necr0manthre.innoadditions.config.BossDefenseForgeConfig;
 import dev.shadowsoffire.apotheosis.Apotheosis;
 import dev.shadowsoffire.apotheosis.adventure.affix.AffixHelper;
+import dev.shadowsoffire.apotheosis.adventure.loot.LootRarity;
 import dev.shadowsoffire.apotheosis.adventure.loot.RarityRegistry;
+import dev.shadowsoffire.apotheosis.adventure.socket.SocketHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,10 +18,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.common.CuriosHelper;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Mod.EventBusSubscriber
 public class InventoryEventsHandler {
@@ -51,7 +53,7 @@ public class InventoryEventsHandler {
         // Check Armor and Hands
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack stack = player.getItemBySlot(slot);
-            if (AffixHelper.getRarity(stack).getOptional().map(rarity -> maxRarity == null || !rarity.isAtMost(maxRarity)).orElse(false)) {
+            if (getEffectiveRarity(stack).map(rarity -> maxRarity == null || !rarity.isAtMost(maxRarity)).orElse(false)) {
                 player.drop(stack.copy(), true);
                 player.setItemSlot(slot, ItemStack.EMPTY);
                 player.sendSystemMessage(Component.translatable("innoadditions.lox"));
@@ -61,15 +63,30 @@ public class InventoryEventsHandler {
         // Check Curios
         new CuriosHelper().getCuriosHandler(player).ifPresent(handler -> {
             handler.getCurios().forEach((id, stacksHandler) -> {
-                 for (int i = 0; i < stacksHandler.getStacks().getSlots(); i++) {
-                     ItemStack stack = stacksHandler.getStacks().getStackInSlot(i);
-                     if (AffixHelper.getRarity(stack).getOptional().map(rarity -> maxRarity == null || !rarity.isAtMost(maxRarity)).orElse(false)) {
-                         player.drop(stack.copy(), true);
-                         stacksHandler.getStacks().setStackInSlot(i, ItemStack.EMPTY);
-                         player.sendSystemMessage(Component.translatable("innoadditions.lox"));
-                     }
-                 }
+                for (int i = 0; i < stacksHandler.getStacks().getSlots(); i++) {
+                    ItemStack stack = stacksHandler.getStacks().getStackInSlot(i);
+                    if (getEffectiveRarity(stack).map(rarity -> maxRarity == null || !rarity.isAtMost(maxRarity)).orElse(false)) {
+                        player.drop(stack.copy(), true);
+                        stacksHandler.getStacks().setStackInSlot(i, ItemStack.EMPTY);
+                        player.sendSystemMessage(Component.translatable("innoadditions.lox"));
+                    }
+                }
             });
         });
+    }
+
+    private static Optional<LootRarity> getEffectiveRarity(ItemStack stack) {
+        var rarity = AffixHelper.getRarity(stack).getOptional().orElse(null);
+        for (var affix : AffixHelper.streamAffixes(stack).toList()) {
+            var affixRarity = affix.rarity().getOptional().orElse(null);
+            if (affixRarity != null && (rarity == null || affixRarity.isAtLeast(rarity)))
+                rarity = affixRarity;
+        }
+        for (var gem : SocketHelper.getGems(stack)) {
+            var affixRarity = gem.rarity().getOptional().orElse(null);
+            if (affixRarity != null && (rarity == null || affixRarity.isAtLeast(rarity)))
+                rarity = affixRarity;
+        }
+        return Optional.ofNullable(rarity);
     }
 }

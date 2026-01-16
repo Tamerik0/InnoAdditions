@@ -24,6 +24,8 @@ public final class BossDefenseForgeConfig {
 
     public final ForgeConfigSpec.ConfigValue<List<? extends Double>> protections;
     public final ForgeConfigSpec.ConfigValue<List<? extends Integer>> durations;
+    public final ForgeConfigSpec.ConfigValue<List<? extends String>> stepan;
+
 
     private BossDefenseForgeConfig(ForgeConfigSpec.Builder b) {
         b.push("boss_defense");
@@ -55,6 +57,13 @@ public final class BossDefenseForgeConfig {
                 .defineListAllowEmpty(
                         List.of("durations"),
                         List.of(100, 100, 60),
+                        o -> true
+                );
+
+        this.stepan = b
+                .defineListAllowEmpty(
+                        List.of("stepan"),
+                        List.of(),
                         o -> true
                 );
 

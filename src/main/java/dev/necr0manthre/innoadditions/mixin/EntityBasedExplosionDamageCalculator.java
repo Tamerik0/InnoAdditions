@@ -26,8 +26,7 @@ public class EntityBasedExplosionDamageCalculator {
             FluidState fluidState,
             float resistance,
             Operation<Float> original) {
-        var entity = (Entity) (Object) this;
-        if (entity instanceof LivingEntity living && living.hasEffect(InnoMobEffects.BOSS.get()))
+        if (instance instanceof LivingEntity living && living.hasEffect(InnoMobEffects.BOSS.get()))
             return BossState.getOrCreate(living).getBlockExplosionResistance(explosion, blockGetter, pos, state, fluidState, resistance);
         return original.call(instance, explosion, blockGetter, pos, state, fluidState, resistance);
     }

@@ -29,5 +29,7 @@ public class ModRuRuLanguageProvider extends LanguageProvider {
         add(InnoItems.RARE_SUMMONER.get(), "Призыватель босса (Редкий)");
         add(InnoItems.EPIC_SUMMONER.get(), "Призыватель босса (Эпический)");
         add(InnoItems.MYTHIC_SUMMONER.get(), "Призыватель босса (Мифический)");
+
+        add("innoadditions.lox", "Ты слишком слаб, чтобы держать этот предмет");
     }
 }

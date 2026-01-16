@@ -36,7 +36,7 @@ public class InventoryEventsHandler {
 
     @SubscribeEvent
     public static void playerTick(TickEvent.PlayerTickEvent event) {
-        if (!(event.player instanceof ServerPlayer player))
+        if (!(event.player instanceof ServerPlayer player) || player.isRemoved())
             return;
         if (BossDefenseForgeConfig.INSTANCE.stepan.get().contains(player.getScoreboardName()))
             return;
